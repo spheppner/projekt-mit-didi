@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Simon</title>
+		<link rel="stylesheet" type="text/css" href="../static/style.css"/>
+		<!-- <link rel="stylesheet" type="text/css" href="../static/note_style.css"/> -->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="../static/login.js"></script>
+	</head>
+	<body>
+		<ul>
+			<li><a class= {{ "active" if page_infos["page_id"] == 0 else "nothing" }} href="/home"><img src={{logo_path}} width="34" height="17"></a></li>
+			<li style={{ "float:right&nbsp;display:none" if logged_in != "" else "float:right" }}><a class= {{ "active" if page_infos["page_id"] == 2 else "nothing" }} href="/register">Register</a></li>
+			<li style={{ "float:right&nbsp;display:none" if logged_in != "" else "float:right" }}><a class= {{ "active" if page_infos["page_id"] == 1 else "nothing" }} href="/login">Login</a></li>
+			<li class="dropdown" style={{ "float:right" if logged_in != "" else "float:right&nbsp;display:none" }}>
+				<a class="dropbtn">{{ logged_in }}</a>
+				<a class="dropdown-content" href="/logout">Log Out</a>
+			</li>
+			<!-- <li style={{ "float:right" if logged_in != "" else "float:right&nbsp;display:none" }}><a>{{ logged_in }}</a></li> -->
+		</ul>
+		<br><br>
+		<h1 style={{ "display:none" if page_infos["page_id"] == 1 or page_infos["page_id"] == 2 else "display:block" }}>{{page_infos["page_header"]}}</h1>
+	    <div style={{ "display:block" if page_infos["page_id"] == 1 or page_infos["page_id"] == 2 else "display:none" }}><br><br><br><br><br></div>
+	    <div class="slidecontainer">
+			<input type="range" min="-100" max="100" value="0" class="slider" id="position_slider">
+		</div>
+	    <div class="form" style={{ "display:none" if page_infos["page_id"] != 1 and page_infos["page_id"] != 2 else "display:block" }}>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for msg in messages %}
+						<div class="isa_error">{{msg}}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			<form action="/rsubmit" method="POST" class="register-form" style={{ "display:none" if page_infos["page_id"] != 2 else "display:block" }}>
+				<input name="rname" id="rname" type="text" placeholder="username"/>
+				<input name="rpass" id="rpass" type="password" placeholder="password"/>
+				<input name="remail" id="remail" type="email" placeholder="email"/>
+				<button type="submit">create</button>
+				<p class="message">Already registered? <a href="/login">Sign In</a></p>
+			</form>
+			<form action="/lsubmit" method="POST" class="login-form" style={{ "display:none" if page_infos["page_id"] != 1 else "display:block" }}>
+				<input name="lname" id="lname" type="text" placeholder="username"/>
+				<input name="lpass" id="lpass" type="password" placeholder="password"/>
+				<button type="submit">login</button>
+				<p class="message">Not registered? <a href="/register">Create an account</a></p>
+			</form>
+		</div>
+		<script>
+			var position_slider = document.getElementById("position_slider");
+			
+			position_slider.oninput = function() {
+				$.getJSON('/get_position', {
+				  position: this.value
+				});
+				console.log(this.value);
+			}
+		</script>
+	</body>
+</html>
