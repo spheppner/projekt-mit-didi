@@ -12,6 +12,7 @@
 			<li><a class= {{ "active" if page_infos["page_id"] == 0 else "nothing" }} href="/home"><img src={{logo_path}} width="34" height="17"></a></li>
 			<li style={{ "float:right&nbsp;display:none" if logged_in != "" else "float:right" }}><a class= {{ "active" if page_infos["page_id"] == 2 else "nothing" }} href="/register">Register</a></li>
 			<li style={{ "float:right&nbsp;display:none" if logged_in != "" else "float:right" }}><a class= {{ "active" if page_infos["page_id"] == 1 else "nothing" }} href="/login">Login</a></li>
+			<li style={{ "float:right if logged_in != "" and access_level == 1 else "float:right display:none" }}><a class= {{ "active" if page_infos["page_id"] == 3 else "nothing" }} href="/control">Control</a></li>
 			<li class="dropdown" style={{ "float:right" if logged_in != "" else "float:right&nbsp;display:none" }}>
 				<a class="dropbtn">{{ logged_in }}</a>
 				<a class="dropdown-content" href="/logout">Log Out</a>
@@ -21,7 +22,7 @@
 		<br><br>
 		<h1 style={{ "display:none" if page_infos["page_id"] == 1 or page_infos["page_id"] == 2 else "display:block" }}>{{page_infos["page_header"]}}</h1>
 	    <div style={{ "display:block" if page_infos["page_id"] == 1 or page_infos["page_id"] == 2 else "display:none" }}><br><br><br><br><br></div>
-	    <div class="slidecontainer">
+	    <div style={{ "display:none" if page_infos["page_id"] != 3 else "display:block" }} class="slidecontainer">
 			<input type="range" min="-100" max="100" value="0" class="slider" id="position_slider">
 		</div>
 	    <div class="form" style={{ "display:none" if page_infos["page_id"] != 1 and page_infos["page_id"] != 2 else "display:block" }}>

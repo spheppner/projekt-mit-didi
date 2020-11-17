@@ -1,20 +1,38 @@
 import RPi.GPIO as GPIO
 from time import sleep
 from RpiMotorLib import RpiMotorLib
+import threading
 
 
 __version__ = "1.0.0"
-__author__ = "Simon HEPPNER, Dietmar TRUMMER"
+__author__ = "Simon HEPPNER; Dietmar TRUMMER"
 
 
 # https://iotdesignpro.com/projects/raspberry-pi-stepper-motor-control-through-a-webpage-using-flask
 
 
+class MotorHandler:
+    def __init__(self, motor):
+        self.motor = motor
+
+    def moveMotor(self, **kwargs):
+        x = threading.Thread(target=self.motor.moveMotor, args=(kwargs))
+        x.start()
+
+
 class Nema17Motor:
     def __init__(
-        self, GPIO_pins, direction_pin, step_pin, spulenumfang, steps_per_revolution, initial_delay
+        self,
+        GPIO_pins,
+        direction_pin,
+        step_pin,
+        spulenumfang,
+        steps_per_revolution,
+        initial_delay,
     ):  # format: (MS1-BCM, MS2-BCM, MS3-BCM), DirectionPin-BCM, StepPin-BCM, Abrolllänge der Spule, Steps per Umdrehung, 0.05 Standardwert
-        self.motordef = RpiMotorLib.A4988Nema(direction_pin, step_pin, GPIO_pins, "A4988")
+        self.motordef = RpiMotorLib.A4988Nema(
+            direction_pin, step_pin, GPIO_pins, "A4988"
+        )
         self.revolution = spulenumfang
         self.steps_per_revolution = steps_per_revolution
         self.initial_delay = initial_delay
@@ -36,7 +54,9 @@ class Nema17Motor:
         duration = length / speed
         step_delay = duration / steps
 
-        self.motordef.motor_go(clockwise, "Full", int(steps), step_delay, False, self.initial_delay)
+        self.motordef.motor_go(
+            clockwise, "Full", int(steps), step_delay, False, self.initial_delay
+        )
 
 
 class ServoMotor:
@@ -60,6 +80,3 @@ class ServoMotor:
     def kill(self):
         self.pwm.stop()
         GPIO.cleanup()
-
-if __name__ == "__main__":
-    print("Testrun")
