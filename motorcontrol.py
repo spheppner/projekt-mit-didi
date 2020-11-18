@@ -1,7 +1,9 @@
 import RPi.GPIO as GPIO
 from time import sleep
+
 from RpiMotorLib import RpiMotorLib
 import threading
+import queue
 
 
 __version__ = "1.0.0"
@@ -9,15 +11,6 @@ __author__ = "Simon HEPPNER; Dietmar TRUMMER"
 
 
 # https://iotdesignpro.com/projects/raspberry-pi-stepper-motor-control-through-a-webpage-using-flask
-
-
-class MotorHandler:
-    def __init__(self, motor):
-        self.motor = motor
-
-    def moveMotor(self, **kwargs):
-        x = threading.Thread(target=self.motor.moveMotor, args=(kwargs))
-        x.start()
 
 
 class Nema17Motor:
@@ -59,6 +52,28 @@ class Nema17Motor:
         )
 
 
+class Nema17MotorHandler(threading.Thread):
+    def __init__(self, motor):
+        super().__init__()
+        self.motor = motor
+        self.running = True
+        self.queue = queue.Queue(maxsize=100)
+
+    def run(self):
+        while self.running:
+            c = self.queue.get()
+            cname = c["command"]
+            cattributes = c["attributes"]
+            if cname == "move":
+                self.motor.moveMotor(cattributes[0], cattributes[1])
+                print(c)
+        print("run finished")
+
+    def kill(self):
+        print("killed")
+        self.running = False
+
+
 class ServoMotor:
     def __init__(self, controlpin):  # format: controlpin-BCM
         self.control_pin = controlpin
@@ -80,3 +95,22 @@ class ServoMotor:
     def kill(self):
         self.pwm.stop()
         GPIO.cleanup()
+
+
+if __name__ == "__main__":
+    hmotor = Nema17MotorHandler(Nema17Motor((14, 15, 18), 20, 21, 100, 200, 0.05))
+
+    hmotor.start()
+
+    hmotor.queue.put({"command": "move", "attributes": (50, 10)})
+    hmotor.queue.put({"command": "move", "attributes": (50, 50)})
+    hmotor.queue.put({"command": "move", "attributes": (100, 50)})
+    hmotor.queue.put({"command": "move", "attributes": (-100, 50)})
+    hmotor.queue.put({"command": "move", "attributes": (-50, 50)})
+    hmotor.queue.put({"command": "move", "attributes": (50, 10)})
+
+    while not hmotor.queue.empty():
+        pass
+
+    hmotor.kill()
+    hmotor.join()
