@@ -66,11 +66,8 @@ class Nema17MotorHandler(threading.Thread):
             cattributes = c["attributes"]
             if cname == "move":
                 self.motor.moveMotor(cattributes[0], cattributes[1])
-                print(c)
-        print("run finished")
 
     def kill(self):
-        print("killed")
         self.running = False
 
 
@@ -146,6 +143,8 @@ class Plotter(threading.Thread):
             self.ymotor.queue.put({"command": "move", "attributes": (dy, vy)})
         self.x += dx
         self.y += dy
+        while not self.xmotor.queue.empty() or not self.ymotor.queue.empty():
+            pass
         print(f"Penlength: {math.sqrt((dy**2+dx**2))} | Alpha: {math.degrees(a)}")
         print(f"X: {self.x} | Y: {self.y}")
 
@@ -176,11 +175,11 @@ if __name__ == "__main__":
     plotter = Plotter()
     plotter.start()
 
-    plotter.queue.put({"command": "move-xy", "attributes": (100, 100)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (90, 90)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (140, 90)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (140, 120)})
-    plotter.queue.put({"command": "move-xy", "attributes": (0, 90)})
+    plotter.queue.put({"command": "move-xy", "attributes": (1000, 1000)})
+    plotter.queue.put({"command": "draw-xy", "attributes": (900, 900)})
+    plotter.queue.put({"command": "draw-xy", "attributes": (1400, 900)})
+    plotter.queue.put({"command": "draw-xy", "attributes": (1400, 1200)})
+    plotter.queue.put({"command": "move-xy", "attributes": (0, 900)})
     plotter.queue.put({"command": "move-xy", "attributes": (0, 0)})
 
     while not plotter.queue.empty():
