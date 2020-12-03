@@ -137,7 +137,7 @@ class Plotter(threading.Thread):
             else:
                 a = math.radians(90)
         else:
-            a = math.atan(dy/dx)
+            a = math.atan(dy / dx)
             vx = math.cos(a) * speed
             vy = math.sin(a) * speed
         if vx != 0:
@@ -160,11 +160,11 @@ class Plotter(threading.Thread):
             print("Pen up")
 
     def kill(self):
+        self.running = False
         self.xmotor.kill()
         self.ymotor.kill()
         self.xmotor.join()
         self.ymotor.join()
-        self.running = False
 
     def calibrate(self):
         # TODO: implement calibration process
