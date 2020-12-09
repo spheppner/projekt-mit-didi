@@ -61,11 +61,12 @@ class Nema17MotorHandler(threading.Thread):
 
     def run(self):
         while self.running:
-            c = self.queue.get()
-            cname = c["command"]
-            cattributes = c["attributes"]
-            if cname == "move":
-                self.motor.moveMotor(cattributes[0], cattributes[1])
+            if not self.queue.empty():
+                c = self.queue.get()
+                cname = c["command"]
+                cattributes = c["attributes"]
+                if cname == "move":
+                    self.motor.moveMotor(cattributes[0], cattributes[1])
 
     def kill(self):
         self.running = False
@@ -113,15 +114,20 @@ class Plotter(threading.Thread):
         self.xmotor.start()
         self.ymotor.start()
         while self.running:
-            c = self.queue.get()
-            ccommand = c["command"]
-            cattributes = c["attributes"]
-            if ccommand == "draw-xy":
-                self.handlePen(True)
-                self.handleMotors(cattributes[0], cattributes[1], 40)
-            elif ccommand == "move-xy":
-                self.handlePen(False)
-                self.handleMotors(cattributes[0], cattributes[1], 100)
+            if not self.queue.empty():
+                c = self.queue.get()
+                ccommand = c["command"]
+                cattributes = c["attributes"]
+                if ccommand == "draw-xy":
+                    self.handlePen(True)
+                    self.handleMotors(cattributes[0], cattributes[1], 40)
+                elif ccommand == "move-xy":
+                    self.handlePen(False)
+                    self.handleMotors(cattributes[0], cattributes[1], 100)
+        self.xmotor.kill()
+        self.ymotor.kill()
+        self.xmotor.join()
+        self.ymotor.join()
 
     def handleMotors(self, x, y, speed):
         dx = x - self.x
@@ -160,10 +166,6 @@ class Plotter(threading.Thread):
 
     def kill(self):
         self.running = False
-        self.xmotor.kill()
-        self.ymotor.kill()
-        self.xmotor.join()
-        self.ymotor.join()
 
     def calibrate(self):
         # TODO: implement calibration process
@@ -175,12 +177,11 @@ if __name__ == "__main__":
     plotter = Plotter()
     plotter.start()
 
-    plotter.queue.put({"command": "move-xy", "attributes": (1000, 1000)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (900, 900)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (1400, 900)})
-    plotter.queue.put({"command": "draw-xy", "attributes": (1400, 1200)})
-    plotter.queue.put({"command": "move-xy", "attributes": (0, 900)})
-    plotter.queue.put({"command": "move-xy", "attributes": (0, 0)})
+    plotter.queue.put({"command": "move-xy", "attributes": (100, 0)})
+    plotter.queue.put({"command": "move-xy", "attributes": (200, 50)})
+    plotter.queue.put({"command": "move-xy", "attributes": (300, 150)})
+    plotter.queue.put({"command": "move-xy", "attributes": (400, 400)})
+    plotter.queue.put({"command": "move-xy", "attributes": (400, 500)})
 
     while not plotter.queue.empty():
         pass
