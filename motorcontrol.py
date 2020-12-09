@@ -57,16 +57,19 @@ class Nema17MotorHandler(threading.Thread):
         super().__init__()
         self.motor = motor
         self.running = True
+        self.busy = False
         self.queue = queue.Queue(maxsize=100)
 
     def run(self):
         while self.running:
             if not self.queue.empty():
+                self.busy = True
                 c = self.queue.get()
                 cname = c["command"]
                 cattributes = c["attributes"]
                 if cname == "move":
                     self.motor.moveMotor(cattributes[0], cattributes[1])
+                self.busy = False
 
     def kill(self):
         self.running = False
@@ -149,7 +152,7 @@ class Plotter(threading.Thread):
             self.ymotor.queue.put({"command": "move", "attributes": (dy, vy)})
         self.x += dx
         self.y += dy
-        while not self.xmotor.queue.empty() or not self.ymotor.queue.empty():
+        while (not self.xmotor.queue.empty() or self.xmotor.busy) or (not self.ymotor.queue.empty() or self.ymotor.busy):
             pass
         print(f"Penlength: {math.sqrt((dy**2+dx**2))} | Alpha: {math.degrees(a)}")
         print(f"X: {self.x} | Y: {self.y}")
