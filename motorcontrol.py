@@ -59,6 +59,7 @@ class Nema17MotorHandler(threading.Thread):
         self.running = True
         self.busy = False
         self.queue = queue.Queue(maxsize=100)
+        self.lock = threading.Lock()
 
     def run(self):
         while self.running:
@@ -70,6 +71,10 @@ class Nema17MotorHandler(threading.Thread):
                 if cname == "move":
                     self.motor.moveMotor(cattributes[0], cattributes[1])
                 self.busy = False
+                self.lock.release()
+
+    def lockMe(self):
+        self.lock.acquire()
 
     def kill(self):
         self.running = False
@@ -147,13 +152,17 @@ class Plotter(threading.Thread):
             vx = math.cos(a) * speed
             vy = math.sin(a) * speed
         if vx != 0:
+            self.xmotor.lockMe()
             self.xmotor.queue.put({"command": "move", "attributes": (dx, vx)})
         if vy != 0:
+            self.ymotor.lockMe()
             self.ymotor.queue.put({"command": "move", "attributes": (dy, vy)})
         self.x += dx
         self.y += dy
-        while (not self.xmotor.queue.empty() or self.xmotor.busy) or (not self.ymotor.queue.empty() or self.ymotor.busy):
-            pass
+        self.xmotor.lock.aquire()
+        self.xmotor.lock.release()
+        self.ymotor.lock.aquire()
+        self.ymotor.lock.release()
         print(f"Penlength: {math.sqrt((dy**2+dx**2))} | Alpha: {math.degrees(a)}")
         print(f"X: {self.x} | Y: {self.y}")
 
