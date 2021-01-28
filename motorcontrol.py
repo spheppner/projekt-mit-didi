@@ -57,20 +57,17 @@ class Nema17MotorHandler(threading.Thread):
         super().__init__()
         self.motor = motor
         self.running = True
-        self.busy = False
         self.queue = queue.Queue(maxsize=100)
         self.lock = threading.Lock()
 
     def run(self):
         while self.running:
             if not self.queue.empty():
-                self.busy = True
                 c = self.queue.get()
                 cname = c["command"]
                 cattributes = c["attributes"]
                 if cname == "move":
                     self.motor.moveMotor(cattributes[0], cattributes[1])
-                self.busy = False
                 self.lock.release()
 
     def lockMe(self):
@@ -189,14 +186,18 @@ if __name__ == "__main__":
     plotter = Plotter()
     plotter.start()
 
-    plotter.queue.put({"command": "move-xy", "attributes": (100, 0)})
-    plotter.queue.put({"command": "move-xy", "attributes": (200, 50)})
-    plotter.queue.put({"command": "move-xy", "attributes": (300, 150)})
-    plotter.queue.put({"command": "move-xy", "attributes": (400, 400)})
-    plotter.queue.put({"command": "move-xy", "attributes": (400, 500)})
+    #kreis halt
+    plotter.queue.put({"command":"move-xy", "attributes":(100,50)})
+    radius = 50
+    steps = 20
+    for num in range(steps):
+        angle = (360/steps) * num
+        y = math.sin(math.radians(angle)) * radius
+        x = math.cos(math.radians(angle)) * radius
+        plotter.queue.put({"command":"draw-xy", "attributes":(x,y)})
 
     while not plotter.queue.empty():
-        pass
+        sleep(2)
 
     plotter.kill()
     plotter.join()
