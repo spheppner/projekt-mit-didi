@@ -159,9 +159,9 @@ class Plotter(threading.Thread):
             self.ymotor.queue.put({"command": "move", "attributes": (dy, vy)})
         self.x += dx
         self.y += dy
-        self.xmotor.lock.aquire()
+        self.xmotor.lock.acquire()
         self.xmotor.lock.release()
-        self.ymotor.lock.aquire()
+        self.ymotor.lock.acquire()
         self.ymotor.lock.release()
         print(f"Penlength: {math.sqrt((dy**2+dx**2))} | Alpha: {math.degrees(a)}")
         print(f"X: {self.x} | Y: {self.y}")
