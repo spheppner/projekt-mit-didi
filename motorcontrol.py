@@ -191,7 +191,7 @@ if __name__ == "__main__":
     radius = 50
     steps = 20
     for num in range(steps):
-        angle = (360/steps) * num
+        angle = (360/steps) * (num+1)
         y = math.sin(math.radians(angle)) * radius
         x = math.cos(math.radians(angle)) * radius
         plotter.queue.put({"command":"draw-xy", "attributes":(x+50,y+50)})
