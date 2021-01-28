@@ -146,8 +146,8 @@ class Plotter(threading.Thread):
                 a = math.radians(90)
         else:
             a = math.atan(dy / dx)
-            vx = math.cos(a) * speed
-            vy = math.sin(a) * speed
+            vx = abs(math.cos(a) * speed)
+            vy = abs(math.sin(a) * speed)
         if vx != 0:
             self.xmotor.lockMe()
             self.xmotor.queue.put({"command": "move", "attributes": (dx, vx)})
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         angle = (360/steps) * num
         y = math.sin(math.radians(angle)) * radius
         x = math.cos(math.radians(angle)) * radius
-        plotter.queue.put({"command":"draw-xy", "attributes":(x,y)})
+        plotter.queue.put({"command":"draw-xy", "attributes":(x+50,y+50)})
 
     while not plotter.queue.empty():
         sleep(2)
