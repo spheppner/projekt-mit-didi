@@ -127,7 +127,7 @@ class WebPage:
             plotter.start()
         if "getposition" in argkeys:
             position = (plotter.x, plotter.y)
-            app.logger.info(argvalues[argkeys.index("getposition")])
+            app.logger.info(position)
 
         return ("", 204)
 
