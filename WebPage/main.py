@@ -130,6 +130,7 @@ class WebPage:
             app.logger.info(position)
         if "setposition" in argkeys:
             position = args["setposition"]
+            app.logger.info(position)
             positionsplit = position#.split(",")
             position = (positionsplit[0],positionsplit[1])
             app.logger.info(position)
