@@ -133,13 +133,13 @@ class WebPage:
         if "moveto" in argkeys:
             position = args["moveto"][0]
             positionsplit = position.split(",")
-            position = (int(positionsplit[0]),int(positionsplit[1]))
+            position = (float(positionsplit[0]),float(positionsplit[1]))
             plotter.queue.put({"command":"move-xy", "attributes":position})
             app.logger.info(position)
         if "drawto" in argkeys:
             position = args["drawto"][0]
             positionsplit = position.split(",")
-            position = (int(positionsplit[0]),int(positionsplit[1]))
+            position = (float(positionsplit[0]),float(positionsplit[1]))
             plotter.queue.put({"command":"draw-xy", "attributes":position})
             app.logger.info(position)
 
