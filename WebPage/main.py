@@ -124,9 +124,9 @@ class WebPage:
         argvalues = list(args.values())
 
         if "start" in argkeys:
-            if not plotter.running:
-                plotter.start()
-                app.logger.info("Started the plotter!")
+            #if not plotter.running:
+            plotter.start()
+            app.logger.info("Started the plotter!")
         if "getpos" in argkeys:
             position = (plotter.x, plotter.y)
             app.logger.info(position)
