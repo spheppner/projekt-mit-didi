@@ -119,7 +119,9 @@ class WebPage:
 
     @app.route("/motorcontrol")
     def motorcontrol():
-        app.logger.info(request.args[request.args.get("index")])
+        args = request.args.to_dict(flat=False)
+        argnames = list(args.values())
+        app.logger.info(argnames)
 
         return ("", 204)
 
