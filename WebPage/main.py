@@ -121,6 +121,8 @@ class WebPage:
     def motorcontrol():
         app.logger.info(request.args)
 
+        return ("", 204)
+
     @app.route("/get_to_position")
     def get_to_position():
         position = request.args.get("position")
