@@ -124,16 +124,23 @@ class WebPage:
         argvalues = list(args.values())
 
         if "start" in argkeys:
-            plotter.start()
-        if "getposition" in argkeys:
+            if not plotter.is_alive():
+                plotter.start()
+                app.logger.info("Started the plotter!")
+        if "getpos" in argkeys:
             position = (plotter.x, plotter.y)
             app.logger.info(position)
-        if "setposition" in argkeys:
-            position = args["setposition"][0]
+        if "moveto" in argkeys:
+            position = args["moveto"][0]
             positionsplit = position.split(",")
             position = (int(positionsplit[0]),int(positionsplit[1]))
-            app.logger.info(position)
             plotter.queue.put({"command":"move-xy", "attributes":position})
+            app.logger.info(position)
+        if "drawto" in argkeys:
+            position = args["drawto"][0]
+            positionsplit = position.split(",")
+            position = (int(positionsplit[0]),int(positionsplit[1]))
+            plotter.queue.put({"command":"draw-xy", "attributes":position})
             app.logger.info(position)
 
         return ("", 204)
