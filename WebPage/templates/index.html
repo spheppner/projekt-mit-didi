@@ -25,6 +25,10 @@
 	    <div style={{ "display:none" if page_infos["page_id"] != 3 else "display:block" }} class="slidecontainer">
 			<input type="range" min="-100" max="100" value="0" class="slider" id="position_slider">
 		</div>
+		<div style={{ "display:none" if page_infos["page_id"] != 3 else "display:block" }} class="slidecontainer">
+			<button type="button" onclick="/motorcontrol">Start</button>
+			<a href="/motorcontrol">test</a>
+		</div>
 	    <div class="form" style={{ "display:none" if page_infos["page_id"] != 1 and page_infos["page_id"] != 2 else "display:block" }}>
 			{% with messages = get_flashed_messages() %}
 				{% if messages %}
@@ -51,7 +55,7 @@
 			var position_slider = document.getElementById("position_slider");
 			
 			position_slider.oninput = function() {
-				$.getJSON('/get_position', {
+				$.getJSON('/get_to_position', {
 				  position: this.value
 				});
 				console.log(this.value);

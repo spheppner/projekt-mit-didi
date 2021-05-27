@@ -23,6 +23,9 @@ class Motor:
 
 motor = Motor()
 
+plotter = motorcontrol.Plotter()
+
+
 
 class WebPage:
 
@@ -114,8 +117,12 @@ class WebPage:
         session["current_page"] = "home"
         return redirect(url_for("mainPage"))
 
-    @app.route("/get_position")
-    def get_position():
+    @app.route("/motorcontrol")
+    def motorcontrol():
+        app.logger.info(request.args)
+
+    @app.route("/get_to_position")
+    def get_to_position():
         position = request.args.get("position")
 
         delta = position - motor.motorposition
