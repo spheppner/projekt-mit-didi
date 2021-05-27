@@ -113,9 +113,10 @@ class Plotter(threading.Thread):
         self.y = 0
         self.pendrawing = True
         self.queue = queue.Queue(maxsize=100)
-        self.running = True
+        self.running = False
 
     def run(self):
+        self.running = True
         self.xmotor.start()
         self.ymotor.start()
         while self.running:
