@@ -120,8 +120,14 @@ class WebPage:
     @app.route("/motorcontrol")
     def motorcontrol():
         args = request.args.to_dict(flat=False)
-        argnames = list(args.keys())
-        app.logger.info(argnames)
+        argkeys = list(args.keys())
+        argvalues = list(args.values())
+
+        if "start" in argkeys:
+            plotter.start()
+        if "getposition" in argkeys:
+            position = (plotter.x, plotter.y)
+            app.logger.info(argvalues[argkeys.index("getposition")])
 
         return ("", 204)
 
