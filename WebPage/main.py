@@ -131,7 +131,7 @@ class WebPage:
         if "setposition" in argkeys:
             position = args["setposition"][0]
             positionsplit = position.split(",")
-            position = (positionsplit[0],positionsplit[1])
+            position = (int(positionsplit[0]),int(positionsplit[1]))
             app.logger.info(position)
             plotter.queue.put({"command":"move-xy", "attributes":position})
             app.logger.info(position)
