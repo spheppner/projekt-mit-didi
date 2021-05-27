@@ -119,7 +119,7 @@ class WebPage:
 
     @app.route("/motorcontrol")
     def motorcontrol():
-        app.logger.info(request.args)
+        app.logger.info(request.args[request.args.get("index")])
 
         return ("", 204)
 
